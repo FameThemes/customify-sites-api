@@ -30,12 +30,18 @@ function customify_site_get_sites ( $request ){
     $cat = sanitize_text_field( $request->get_param( 'cat' ) );
     $tag = sanitize_text_field( $request->get_param( 'tag' ) );
     $search = sanitize_text_field( $request->get_param( 's' ) );
+    $per_page = sanitize_text_field( $request->get_param( 'per_page' ) );
     //$parameters = $request->get_query_params();
+    $per_page = absint( $per_page );
+    if ( $per_page <= 0  || $per_page > 100 ) {
+        $per_page = 100;
+    }
 
     $the_query = new WP_Query( array(
-        'posts_per_page' => 20,
+        'posts_per_page' => $per_page,
         'paged' => $paged,
         'post_parent' => 0,
+        'post_type' => 'post',
         'category_name' => $cat,
         'tag' => $tag,
         's' => $search
@@ -47,7 +53,7 @@ function customify_site_get_sites ( $request ){
         $thumbnail_url=  get_the_post_thumbnail_url( $p );
         $post_tags =  wp_get_post_tags( $p->ID, array( 'fields' => 'slug' ) );
         $post_cats =  wp_get_post_terms( $p->ID, 'post_category', array( 'fields' => 'slug' ) );
-        $posts[] = array(
+        $posts[ $p->post_name ] = array(
             'id' => $p->ID,
             'title' => $p->post_title,
             'slug' => $p->post_name,
@@ -55,7 +61,20 @@ function customify_site_get_sites ( $request ){
             'excerpt' => $p->post_excerpt,
             'thumbnail_url' => $thumbnail_url,
             'plugins' => get_post_meta( $p->ID, '_site_plugins', true ),
+            'manual_plugins' => get_post_meta( $p->ID, '_site_manual_plugins', true ),
             'demo_url' => get_post_meta( $p->ID, '_site_demo_url', true ),
+
+            'resources' => array(
+                'xml_url' => get_field('_site_xml_url',  $p->ID),
+                'json_url' => get_field('_site_json_url',  $p->ID),
+
+                'elementor_xml_url' => get_field('_site_elementor_xml_url',  $p->ID),
+                'elementor_json_url' => get_field('_site_elementor_json_url	',  $p->ID),
+
+                'beaver_builder_xm_url' => get_field('_site_beaver_builder_xml_url',  $p->ID),
+                'beaver_builder_json_url' => get_field('_site_beaver_json_url',  $p->ID),
+            ),
+
             'tags' => is_wp_error( $post_tags ) ?  array() : $post_tags,
             'categories' =>  is_wp_error( $post_cats ) ?  array() : $post_cats,
         );
@@ -66,7 +85,7 @@ function customify_site_get_sites ( $request ){
     $terms = get_terms( 'category', array(
         'hide_empty' => true,
         'lang' => 'en', // use language slug in the query
-        'number' => 5,
+        //'number' => 5,
     ) );
     if ( ! is_wp_error( $terms ) ) {
         foreach ($terms as $t) {
@@ -81,7 +100,7 @@ function customify_site_get_sites ( $request ){
 
     $terms = get_terms( 'post_tag', array(
         'hide_empty' => true,
-        'number' => 5,
+        //'number' => 5,
         'lang' => 'en', // use language slug in the query
     ) );
     if ( ! is_wp_error( $terms ) ) {
