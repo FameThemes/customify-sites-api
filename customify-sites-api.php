@@ -69,6 +69,7 @@ function customify_site_get_sites ( $request ){
             'plugins' => get_post_meta( $p->ID, '_site_plugins', true ),
             'manual_plugins' => get_post_meta( $p->ID, '_site_manual_plugins', true ),
             'demo_url' => get_post_meta( $p->ID, '_site_demo_url', true ),
+            'pro' => get_post_meta( $p->ID, '_site_pro', true ),
 
             'resources' => array(
                 'xml_url' => get_field('_site_xml_url',  $p->ID),
@@ -77,7 +78,7 @@ function customify_site_get_sites ( $request ){
                 'elementor_xml_url' => get_field('_site_elementor_xml_url',  $p->ID),
                 'elementor_json_url' => get_field('_site_elementor_json_url	',  $p->ID),
 
-                'beaver_builder_xm_url' => get_field('_site_beaver_builder_xml_url',  $p->ID),
+                'beaver_builder_xml_url' => get_field('_site_beaver_builder_xml_url',  $p->ID),
                 'beaver_builder_json_url' => get_field('_site_beaver_json_url',  $p->ID),
             ),
 
@@ -182,13 +183,20 @@ function customify_site_get_sites_v2_1 ( $request ){
             'thumbnail_url' => $thumbnail_url,
             'manual_plugins' => customify_acf_checkbox_values( '_site_manual_plugins',  $p->ID ) ,
             'demo_url' => get_post_meta( $p->ID, '_site_demo_url', true ),
+            'pro' => get_post_meta( $p->ID, '_site_pro', true ) ? 1 : '',
             'resources' => array(
                 'xml_url' => get_field('_site_xml_url',  $p->ID),
+                'xml_placeholder_url' => get_field('_site_xml_placeholder_url',  $p->ID),
                 'json_url' => get_field('_site_json_url',  $p->ID),
+
                 'elementor_xml_url' => get_field('_site_elementor_xml_url',  $p->ID),
+                'elementor_xml_placeholder_url' => get_field('_site_elementor_xml_placeholder_url',  $p->ID),
                 'elementor_json_url' => get_field('_site_elementor_json_url',  $p->ID),
-                'beaver_builder_xm_url' => get_field('_site_beaver_builder_xml_url',  $p->ID),
-                'beaver_builder_json_url' => get_field('_site_beaver_json_url',  $p->ID),
+
+                'beaver_builder_xm_url' => get_field('_site_beaver_builder_xml_url',  $p->ID), // fallback old version
+                'beaver_builder_xml_url' => get_field('_site_beaver_builder_xml_url',  $p->ID),
+                'beaver_builder_xml_placeholder_url' => get_field('_site_beaver_builder_xml_placeholder_url',  $p->ID),
+                'beaver_builder_json_url' => get_field('_site_beaver_json_url',  $p->ID ),
             ),
             'tags' => is_wp_error( $post_tags ) ?  array() : $post_tags,
             'categories' =>  is_wp_error( $post_cats ) ?  array() : $post_cats,
